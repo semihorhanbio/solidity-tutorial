@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import { useState, useEffect } from "react";
 import PrimaryButton from "../components/primary-button";
 import Keyboard from "../components/keyboard";
-import abi from "../utils/Keyboards.json"
+import abi from "../utils/Keyboards.json";
 
 export default function Home() {
   const [ethereum, setEthereum] = useState(undefined);
@@ -10,16 +10,16 @@ export default function Home() {
   const [keyboards, setKeyboards] = useState([]);
   const [keyboardsLoading, setKeyboardsLoading] = useState(false);
 
-  const contractAddress = '0x9C71bD759df479276F6eB215471aFF64cbf910A3';
+  const contractAddress = "0x1919eC4Bf7b65528D7CDa70ed7916d9379aa0Ff3";
   const contractABI = abi.abi;
 
   const handleAccounts = (accounts) => {
     if (accounts.length > 0) {
       const account = accounts[0];
-      console.log('We have an authorized account: ', account);
+      console.log("We have an authorized account: ", account);
       setConnectedAccount(account);
     } else {
-      console.log("No authorized accounts yet")
+      console.log("No authorized accounts yet");
     }
   };
 
@@ -29,7 +29,7 @@ export default function Home() {
     }
 
     if (ethereum) {
-      const accounts = await ethereum.request({ method: 'eth_accounts' });
+      const accounts = await ethereum.request({ method: "eth_accounts" });
       handleAccounts(accounts);
     }
   };
@@ -37,11 +37,11 @@ export default function Home() {
 
   const connectAccount = async () => {
     if (!ethereum) {
-      alert('MetaMask is required to connect an account');
+      alert("MetaMask is required to connect an account");
       return;
     }
 
-    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+    const accounts = await ethereum.request({ method: "eth_requestAccounts" });
     handleAccounts(accounts);
   };
 
@@ -51,56 +51,68 @@ export default function Home() {
       try {
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
-        const keyboardsContract = new ethers.Contract(contractAddress, contractABI, signer);
+        const keyboardsContract = new ethers.Contract(
+          contractAddress,
+          contractABI,
+          signer
+        );
 
         const keyboards = await keyboardsContract.getKeyboards();
-        console.log('Retrieved keyboards...', keyboards)
+        console.log("Retrieved keyboards...", keyboards);
 
-        setKeyboards(keyboards)
+        setKeyboards(keyboards);
       } finally {
         setKeyboardsLoading(false);
       }
     }
-  }
-  useEffect(() => getKeyboards(), [connectedAccount])
+  };
+  useEffect(() => getKeyboards(), [connectedAccount]);
 
   if (!ethereum) {
-    return <p>Please install MetaMask to connect to this site</p>
+    return <p>Please install MetaMask to connect to this site</p>;
   }
 
   if (!connectedAccount) {
-    return <PrimaryButton onClick={connectAccount}>Connect MetaMask Wallet</PrimaryButton>
+    return (
+      <PrimaryButton onClick={connectAccount}>
+        Connect MetaMask Wallet
+      </PrimaryButton>
+    );
   }
 
   if (keyboards.length > 0) {
     return (
-      <div className="flex flex-col gap-4">
-        <PrimaryButton type="link" href="/create">Create a Keyboard!</PrimaryButton>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 p-2">
-          {keyboards.map(
-            ([kind, isPBT, filter], i) => (
-              <Keyboard key={i} kind={kind} isPBT={isPBT} filter={filter} />
-            )
-          )}
+      <div className='flex flex-col gap-4'>
+        <PrimaryButton type='link' href='/create'>
+          Create a Keyboard!
+        </PrimaryButton>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-2 p-2'>
+          {keyboards.map(([kind, isPBT, filter], i) => (
+            <Keyboard key={i} kind={kind} isPBT={isPBT} filter={filter} />
+          ))}
         </div>
       </div>
-    )
+    );
   }
 
   if (keyboardsLoading) {
     return (
-      <div className="flex flex-col gap-4">
-        <PrimaryButton type="link" href="/create">Create a Keyboard!</PrimaryButton>
+      <div className='flex flex-col gap-4'>
+        <PrimaryButton type='link' href='/create'>
+          Create a Keyboard!
+        </PrimaryButton>
         <p>Loading Keyboards...</p>
       </div>
-    )
+    );
   }
 
   // No keyboards yet
   return (
-    <div className="flex flex-col gap-4">
-      <PrimaryButton type="link" href="/create">Create a Keyboard!</PrimaryButton>
+    <div className='flex flex-col gap-4'>
+      <PrimaryButton type='link' href='/create'>
+        Create a Keyboard!
+      </PrimaryButton>
       <p>No keyboards yet!</p>
     </div>
-  )
+  );
 }
