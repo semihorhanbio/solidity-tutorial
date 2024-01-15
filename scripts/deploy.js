@@ -1,9 +1,9 @@
-const hre = require("hardhat");
 async function main() {
-  const keyboardsContract = await hre.ethers.deployContract("Keyboards");
-  await keyboardsContract.waitForDeployment();
+  const keyboardsContractFactory = await hre.ethers.getContractFactory("Keyboards");
+  const keyboardsContract = await keyboardsContractFactory.deploy();
+  await keyboardsContract.deployed();
 
-  console.log("Contract deployed to:", keyboardsContract.target);
+  console.log("The keyboards contract is deployed!", keyboardsContract.address)
 
   const keyboards = await keyboardsContract.getKeyboards();
   console.log("We got the keyboards!", keyboards);
