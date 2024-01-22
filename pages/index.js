@@ -5,6 +5,7 @@ import { UserCircleIcon } from "@heroicons/react/solid";
 import Keyboard from "../components/keyboard";
 import abi from "../utils/Keyboards.json";
 import addressesEqual from "../utils/addressesEqual";
+import TipButton from "../components/tip-button";
 
 export default function Home() {
   const [ethereum, setEthereum] = useState(undefined);
@@ -96,7 +97,7 @@ export default function Home() {
                 {addressesEqual(owner, connectedAccount) ? (
                   <UserCircleIcon className='h-5 w-5 text-indigo-100' />
                 ) : (
-                  <button>Tip!</button>
+                  <TipButton ethereum={ethereum} index={i} />
                 )}
               </span>
             </div>
