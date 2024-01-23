@@ -5,6 +5,7 @@ import { UserCircleIcon } from "@heroicons/react/solid";
 import Keyboard from "../components/keyboard";
 import abi from "../utils/Keyboards.json";
 import addressesEqual from "../utils/addressesEqual";
+import getKeyboardsContract from "../utils/getKeyboardsContract";
 import TipButton from "../components/tip-button";
 
 export default function Home() {
@@ -12,6 +13,8 @@ export default function Home() {
   const [connectedAccount, setConnectedAccount] = useState(undefined);
   const [keyboards, setKeyboards] = useState([]);
   const [keyboardsLoading, setKeyboardsLoading] = useState(false);
+
+  const keyboardsContract = getKeyboardsContract(ethereum);
 
   const contractAddress = "0xd26091F9B73F6b8812463F526d6A96631f78d567";
   const contractABI = abi.abi;
@@ -49,17 +52,9 @@ export default function Home() {
   };
 
   const getKeyboards = async () => {
-    if (ethereum && connectedAccount) {
+    if (keyboardsContract && connectedAccount) {
       setKeyboardsLoading(true);
       try {
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = provider.getSigner();
-        const keyboardsContract = new ethers.Contract(
-          contractAddress,
-          contractABI,
-          signer
-        );
-
         const keyboards = await keyboardsContract.getKeyboards();
         console.log("Retrieved keyboards...", keyboards);
 
@@ -69,7 +64,7 @@ export default function Home() {
       }
     }
   };
-  useEffect(() => getKeyboards(), [connectedAccount]);
+  useEffect(() => getKeyboards(), [!!keyboardsContract, connectedAccount]);
 
   if (!ethereum) {
     return <p>Please install MetaMask to connect to this site</p>;
