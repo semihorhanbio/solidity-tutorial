@@ -8,9 +8,20 @@ export default function MetaMaskAccountProvider({ children }) {
 
   const setEthereumFromWindow = async () => {
     if (window.ethereum) {
-      setEthereum(window.ethereum);
+      // Reload if chain changes, see <https://docs.metamask.io/guide/ethereum-provider.html#chainchanged>
+      window.ethereum.on("chainChanged", (_chainId) =>
+        window.location.reload()
+      );
+      const chainId = await window.ethereum.request({ method: "eth_chainId" });
+      const sepoliaId = "0xaa36a7"; // See <https://docs.metamask.io/guide/ethereum-provider.html#chain-ids>
+      if (chainId === sepoliaId) {
+        setEthereum(window.ethereum);
+      } else {
+        alert("Please use the Sepolia test network");
+      }
     }
   };
+
   useEffect(() => setEthereumFromWindow(), []);
 
   const handleAccounts = (accounts) => {
